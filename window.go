@@ -87,7 +87,7 @@ func showStatusWindow(battery int, charging bool) {
 	screenW, _, _ := procGetSystemMetrics.Call(smCxScreen)
 	screenH, _, _ := procGetSystemMetrics.Call(smCyScreen)
 
-	var winW int32 = 300
+	var winW int32 = 200
 	var winH int32 = 85
 	x := int32(screenW) - winW - 10
 	y := int32(screenH) - winH - 60
@@ -143,7 +143,7 @@ func drawBatteryStatus(hdc uintptr) {
 	fgColor = 0x00000000
 
 	hBgBrush, _, _ := procCreateSolidBrush.Call(bgColor)
-	bgRect := rect{0, 0, 300, 85}
+	bgRect := rect{0, 0, 200, 85}
 	procFillRect.Call(hdc, uintptr(unsafe.Pointer(&bgRect)), hBgBrush)
 	procDeleteObject.Call(hBgBrush)
 
@@ -159,19 +159,19 @@ func drawBatteryStatus(hdc uintptr) {
 	oldFont, _, _ := procSelectObject.Call(hdc, hFont)
 
 	titlePtr, _ := syscall.UTF16PtrFromString("Asus ROG Pugio II")
-	titleRect := rect{0, 2, 300, 24}
+	titleRect := rect{0, 2, 200, 24}
 	procDrawTextW.Call(hdc, uintptr(unsafe.Pointer(titlePtr)), ^uintptr(0), uintptr(unsafe.Pointer(&titleRect)), dtCenter|dtSingleLine)
 
 	if statusBattery == -1 {
 		discPtr, _ := syscall.UTF16PtrFromString("Not connected")
-		discRect := rect{0, 30, 300, 85}
+		discRect := rect{0, 30, 200, 85}
 		procDrawTextW.Call(hdc, uintptr(unsafe.Pointer(discPtr)), ^uintptr(0), uintptr(unsafe.Pointer(&discRect)), dtCenter|dtSingleLine|dtVCenter)
 	} else {
 		hPen, _, _ := procCreatePen.Call(0, 2, fgColor)
 		oldPen, _, _ := procSelectObject.Call(hdc, hPen)
 
-		procRectangle.Call(hdc, 85, 25, 205, 55)
-		procRectangle.Call(hdc, 205, 32, 210, 48)
+		procRectangle.Call(hdc, 25, 25, 145, 55)
+		procRectangle.Call(hdc, 145, 32, 150, 48)
 
 		var fillColor uintptr
 		if statusBattery >= 50 {
@@ -185,7 +185,7 @@ func drawBatteryStatus(hdc uintptr) {
 		hFillBrush, _, _ := procCreateSolidBrush.Call(fillColor)
 		procSelectObject.Call(hdc, hFillBrush)
 		fillWidth := int32(float64(statusBattery) / 100.0 * 116)
-		fillRect := rect{87, 27, 87 + fillWidth, 53}
+		fillRect := rect{27, 27, 27 + fillWidth, 53}
 		procFillRect.Call(hdc, uintptr(unsafe.Pointer(&fillRect)), hFillBrush)
 		procDeleteObject.Call(hFillBrush)
 
@@ -194,12 +194,12 @@ func drawBatteryStatus(hdc uintptr) {
 
 		procSelectObject.Call(hdc, hFont)
 		percentText, _ := syscall.UTF16PtrFromString(fmt.Sprintf("%d%%", statusBattery))
-		percentRect := rect{212, 25, 300, 55}
+		percentRect := rect{152, 25, 200, 55}
 		procDrawTextW.Call(hdc, uintptr(unsafe.Pointer(percentText)), ^uintptr(0), uintptr(unsafe.Pointer(&percentRect)), dtVCenter|dtSingleLine)
 
 		if statusCharging {
 			chargePtr, _ := syscall.UTF16PtrFromString("Charging")
-			chargeRect := rect{85, 60, 210, 80}
+			chargeRect := rect{25, 60, 150, 80}
 			procDrawTextW.Call(hdc, uintptr(unsafe.Pointer(chargePtr)), ^uintptr(0), uintptr(unsafe.Pointer(&chargeRect)), dtCenter|dtSingleLine)
 		}
 	}
