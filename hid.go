@@ -115,7 +115,7 @@ func enumerateHIDDevices() []string {
 		interfaceData.CbSize = uint32(unsafe.Sizeof(interfaceData))
 		fmt.Printf("[ENUM] interfaceData.CbSize = %d (sizeof=%d)\n", interfaceData.CbSize, unsafe.Sizeof(interfaceData))
 
-		ret, _, _ := procSetupDiEnumDeviceInterfaces.Call(
+		ret, _, lastErr := procSetupDiEnumDeviceInterfaces.Call(
 			devInfoSet, 0,
 			uintptr(unsafe.Pointer(&guid[0])),
 			uintptr(index),
@@ -123,8 +123,7 @@ func enumerateHIDDevices() []string {
 		)
 		fmt.Printf("[ENUM] SetupDiEnumDeviceInterfaces(index=%d) returned %d\n", index, ret)
 		if ret == 0 {
-			lastErr, _, _ := procGetLastError.Call()
-			fmt.Printf("[ENUM] GetLastError = %d\n", lastErr)
+			fmt.Printf("[ENUM] GetLastError = %v\n", lastErr)
 			break
 		}
 
@@ -142,7 +141,7 @@ func enumerateHIDDevices() []string {
 		const detailCbSize = 8
 		*(*uint32)(unsafe.Pointer(&buf[0])) = detailCbSize
 
-		ret, _, _ = procSetupDiGetDeviceInterfaceDetailW.Call(
+		ret, _, lastErr = procSetupDiGetDeviceInterfaceDetailW.Call(
 			devInfoSet,
 			uintptr(unsafe.Pointer(&interfaceData)),
 			uintptr(unsafe.Pointer(&buf[0])),
@@ -150,8 +149,7 @@ func enumerateHIDDevices() []string {
 			0, 0,
 		)
 		if ret == 0 {
-			lastErr, _, _ := procGetLastError.Call()
-			fmt.Printf("[ENUM] SetupDiGetDeviceInterfaceDetailW failed: GetLastError = %d\n", lastErr)
+			fmt.Printf("[ENUM] SetupDiGetDeviceInterfaceDetailW failed: GetLastError = %v\n", lastErr)
 			index++
 			continue
 		}
