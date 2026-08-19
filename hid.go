@@ -242,16 +242,18 @@ func readBatteryFromDevice(path string) (int, bool) {
 	packet[1] = 0x12
 	packet[2] = 0x07
 
-	ret, _, _ = procHidD_SetOutputReport.Call(uintptr(handle), uintptr(unsafe.Pointer(&packet[0])), uintptr(len(packet)))
-	fmt.Printf("[HID ] HidD_SetOutputReport returned %d\n", ret)
-	if ret == 0 {
-		fmt.Println("[HID ] HidD_SetOutputReport failed, trying WriteFile...")
-		var bytesWritten uint32
-		err = syscall.WriteFile(handle, packet[:], &bytesWritten, nil)
-		if err != nil {
-			fmt.Printf("[HID ] WriteFile failed: %v\n", err)
+	var bytesWritten uint32
+	err = syscall.WriteFile(handle, packet[:], &bytesWritten, nil)
+	if err != nil {
+		fmt.Printf("[HID ] WriteFile failed: %v, trying HidD_SetOutputReport...\n", err)
+		ret, _, _ = procHidD_SetOutputReport.Call(uintptr(handle), uintptr(unsafe.Pointer(&packet[0])), uintptr(len(packet)))
+		fmt.Printf("[HID ] HidD_SetOutputReport returned %d\n", ret)
+		if ret == 0 {
+			fmt.Println("[HID ] HidD_SetOutputReport failed")
 			return -1, false
 		}
+		fmt.Printf("[HID ] HidD_SetOutputReport sent %d bytes\n", len(packet))
+	} else {
 		fmt.Printf("[HID ] WriteFile sent %d bytes\n", bytesWritten)
 	}
 
