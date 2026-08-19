@@ -48,7 +48,7 @@ func main() {
 
 	go func() {
 		for {
-			time.Sleep(60 * time.Second)
+			time.Sleep(5 * time.Second)
 			if trayHWND != 0 {
 				procPostMessageW.Call(trayHWND, wmAppUpdate, 0, 0)
 			}
