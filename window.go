@@ -87,8 +87,8 @@ func showStatusWindow(battery int, charging bool) {
 	screenW, _, _ := procGetSystemMetrics.Call(smCxScreen)
 	screenH, _, _ := procGetSystemMetrics.Call(smCyScreen)
 
-	var winW int32 = 320
-	var winH int32 = 120
+	var winW int32 = 300
+	var winH int32 = 85
 	x := int32(screenW) - winW - 10
 	y := int32(screenH) - winH - 60
 
@@ -143,7 +143,7 @@ func drawBatteryStatus(hdc uintptr) {
 	fgColor = 0x00000000
 
 	hBgBrush, _, _ := procCreateSolidBrush.Call(bgColor)
-	bgRect := rect{0, 0, 320, 120}
+	bgRect := rect{0, 0, 300, 85}
 	procFillRect.Call(hdc, uintptr(unsafe.Pointer(&bgRect)), hBgBrush)
 	procDeleteObject.Call(hBgBrush)
 
@@ -159,12 +159,12 @@ func drawBatteryStatus(hdc uintptr) {
 	oldFont, _, _ := procSelectObject.Call(hdc, hFont)
 
 	titlePtr, _ := syscall.UTF16PtrFromString("Asus ROG Pugio II")
-	titleRect := rect{0, 2, 320, 24}
+	titleRect := rect{0, 2, 300, 24}
 	procDrawTextW.Call(hdc, uintptr(unsafe.Pointer(titlePtr)), ^uintptr(0), uintptr(unsafe.Pointer(&titleRect)), dtCenter|dtSingleLine)
 
 	if statusBattery == -1 {
 		discPtr, _ := syscall.UTF16PtrFromString("Not connected")
-		discRect := rect{0, 30, 320, 90}
+		discRect := rect{0, 30, 300, 85}
 		procDrawTextW.Call(hdc, uintptr(unsafe.Pointer(discPtr)), ^uintptr(0), uintptr(unsafe.Pointer(&discRect)), dtCenter|dtSingleLine|dtVCenter)
 	} else {
 		hPen, _, _ := procCreatePen.Call(0, 2, fgColor)
