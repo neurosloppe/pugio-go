@@ -17,16 +17,26 @@ Go 1.21 or newer. Windows only; the code uses syscall bindings to user32.dll, hi
 
 ## Building
 
-From the project directory run:
+There are no external Go dependencies; the standard library is enough.
+
+### Console build (with debug output)
 
 ```go
 go build
 ```
 
-This produces pugio-go.exe in the current directory. To cross-compile or set a different output name:
+Produces a console application. A console window will appear and display all diagnostic output (`[ENUM]`, `[BATT]`, `[HID ]` prefixed logs). Useful for debugging HID communication or verifying device detection.
+
+### GUI build (no console window)
 
 ```go
-go build -o pugio-go.exe
+go build -ldflags -H=windowsgui
 ```
 
-There are no external Go dependencies; the standard library is enough.
+Produces a GUI application with no console window. All diagnostic output is discarded. Use this for daily use — the tray icon is the only interface.
+
+### Custom output name
+
+```go
+go build -ldflags -H=windowsgui -o pugio-go.exe
+```
